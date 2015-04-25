@@ -69,33 +69,33 @@ namespace CommandClientVisualStudioTest
             IPAddress ipaddress = IPAddress.Parse("127.0.0.1");
             Command command = new Command(CommandType.UserExit, ipaddress, null);
             //System.IO.Stream fakeStream = mocks.DynamicMock<System.IO.Stream>();
-            MemoryStream stream = new MemoryStream();
-
+            MemoryStream expectedStream = new MemoryStream();
+            MemoryStream actualStream = new MemoryStream();
             byte[] commandBytes = { 0, 0, 0, 0 };
             byte[] ipLength = { 9, 0, 0, 0 };
             byte[] ip = { 49, 50, 55, 46, 48, 46, 48, 46, 49 };
             byte[] metaDataLength = { 2, 0, 0, 0 };
             byte[] metaData = { 10, 0 };
 
-            stream.Write(commandBytes, 0, 4);
-            stream.Flush();
-            stream.Write(ipLength, 0, 4);
-            stream.Flush();
-            stream.Write(ip, 0, 9);
-            stream.Flush();
-            stream.Write(metaDataLength, 0, 4);
-            stream.Flush();
-            stream.Write(metaData, 0, 2);
-            stream.Flush();
+            expectedStream.Write(commandBytes, 0, 4);
+            expectedStream.Flush();
+            expectedStream.Write(ipLength, 0, 4);
+            expectedStream.Flush();
+            expectedStream.Write(ip, 0, 9);
+            expectedStream.Flush();
+            expectedStream.Write(metaDataLength, 0, 4);
+            expectedStream.Flush();
+            expectedStream.Write(metaData, 0, 2);
+            expectedStream.Flush();
             
             CMDClient client = new CMDClient(null, "Bogus network name");
 
-            
 
-            typeof(CMDClient).GetField("networkStream", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(client, stream);
+
+            typeof(CMDClient).GetField("networkStream", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(client, actualStream);
             client.SendCommandToServerUnthreaded(command);
-            stream.Close();
-            CollectionAssert.AreEqual(stream.ToArray(), commandBytes);
+            //expectedStream.Close();
+            CollectionAssert.AreEqual(expectedStream.ToArray(), actualStream.ToArray());
         }
 
         [TestMethod]
